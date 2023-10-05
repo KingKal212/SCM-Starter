@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react";
 import {ethers} from "ethers";
-import atm_abi from "../artifacts/contracts/Assessment.sol/Assessment.json";
+import abi from "./contract/abi.json";
 
 export default function HomePage() {
   const [ethWallet, setEthWallet] = useState(undefined);
@@ -8,7 +8,7 @@ export default function HomePage() {
   const [atm, setATM] = useState(undefined);
   const [balance, setBalance] = useState(undefined);
 
-  const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+  const contractAddress = "0x326592C60A7a2A23a1668D2FE9a7F81Fc7Ba9D56";
   const atmABI = atm_abi.abi;
 
   const getWallet = async() => {
