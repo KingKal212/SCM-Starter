@@ -5,11 +5,12 @@ import abi from "./contract/abi.json";
 export default function HomePage() {
   const [ethWallet, setEthWallet] = useState(undefined);
   const [account, setAccount] = useState(undefined);
-  const [atm, setATM] = useState(undefined);
-  const [balance, setBalance] = useState(undefined);
+
+  const [contract, setContract] = useState(undefined);
+  const [tally, setTally] = useState(undefined);
+
 
   const contractAddress = "0x326592C60A7a2A23a1668D2FE9a7F81Fc7Ba9D56";
-  const atmABI = atm_abi.abi;
 
   const getWallet = async() => {
     if (window.ethereum) {
@@ -42,36 +43,36 @@ export default function HomePage() {
     handleAccount(accounts);
     
     // once wallet is set we can get a reference to our deployed contract
-    getATMContract();
+    getContract();
   };
 
-  const getATMContract = () => {
+  const getContract = () => {
     const provider = new ethers.providers.Web3Provider(ethWallet);
     const signer = provider.getSigner();
-    const atmContract = new ethers.Contract(contractAddress, atmABI, signer);
+    const tally = new ethers.Contract(contractAddress, abi, signer);
  
-    setATM(atmContract);
+    setContract(tally);
   }
 
-  const getBalance = async() => {
-    if (atm) {
-      setBalance((await atm.getBalance()).toNumber());
+  const getTally = async() => {
+    if (contract) {
+      setTally((await contract.tally()).toNumber());
     }
   }
 
-  const deposit = async() => {
-    if (atm) {
-      let tx = await atm.deposit(1);
+  const addToTally = async() => {
+    if (contract) {
+      let tx = await contract.addTally();
       await tx.wait()
-      getBalance();
+      getTally();
     }
   }
 
-  const withdraw = async() => {
-    if (atm) {
-      let tx = await atm.withdraw(1);
+  const removeFromTally = async() => {
+    if (contract) {
+      let tx = await contract.removeTally();
       await tx.wait()
-      getBalance();
+      getTally();
     }
   }
 
@@ -86,16 +87,21 @@ export default function HomePage() {
       return <button onClick={connectAccount}>Please connect your Metamask wallet</button>
     }
 
-    if (balance == undefined) {
-      getBalance();
+    if (tally == undefined) {
+      getTally();
     }
 
     return (
       <div>
         <p>Your Account: {account}</p>
-        <p>Your Balance: {balance}</p>
-        <button onClick={deposit}>Deposit 1 ETH</button>
-        <button onClick={withdraw}>Withdraw 1 ETH</button>
+        <p>Your current Tally: {tally}</p>
+        <hr></hr>
+        <button onClick={addToTally}> add To Tally </button>
+        <button onClick={removeFromTally}> remove from Tally </button>
+        <hr></hr>
+        
+
+
       </div>
     )
   }
@@ -104,7 +110,7 @@ export default function HomePage() {
 
   return (
     <main className="container">
-      <header><h1>Welcome to the Metacrafters ATM!</h1></header>
+      <header><h1>Welcome to the Tally Dapp!</h1></header>
       {initUser()}
       <style jsx>{`
         .container {
